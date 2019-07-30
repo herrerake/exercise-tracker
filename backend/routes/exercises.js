@@ -34,14 +34,14 @@ router.route('/:id').get((req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/:id').get((req, res) => {
+router.route('/:id').delete((req, res) => {
     Exercise.findByIdAndDelete(req.params.id)
-        .then(exercise => res.json('Exercise Deleted.'))
+        .then(() => res.json('Exercise Deleted.'))
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
 router.route('/update/:id').post((req, res) => {
-    Exercise.findById(req.param.id)
+    Exercise.findById(req.params.id)
     .then(exercise => {
         exercise.username = req.body.username;
         exercise.description = req.body.description;
