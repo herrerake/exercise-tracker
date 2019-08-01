@@ -1,73 +1,86 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
-export default class CreateExercises extends Component {
-    constructor(props) {
-        super(props);
+export default class CreateExercise extends Component {
+  constructor(props) {
+    super(props);
 
-        this.onChangeUsername = this.onChangeUsername.bind(this);
-        this.onChangeDescription = this.onChangeDescription.bind(this);
-        this.onChangeDuration = this.onChangeDuration.bind(this);
-        this.onChangeDate = this.onChangeDate.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
+    this.onChangeUsername = this.onChangeUsername.bind(this);
+    this.onChangeDescription = this.onChangeDescription.bind(this);
+    this.onChangeDuration = this.onChangeDuration.bind(this);
+    this.onChangeDate = this.onChangeDate.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
 
-        this.state = {
-            username: '',
-            description: '',
-            duration: 0,
-            date: new Date(),
-            users: []
+    this.state = {
+      username: '',
+      description: '',
+      duration: 0,
+      date: new Date(),
+      users: []
+    }
+  }
+
+  componentDidMount() {
+    axios.get('http://localhost:5001/users/')
+      .then(response => {
+        if (response.data.length > 0) {
+          this.setState({
+            users: response.data.map(user => user.username),
+            username: response.data[0].username
+          })
         }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+
+  }
+
+  onChangeUsername(e) {
+    this.setState({
+      username: e.target.value
+    })
+  }
+
+  onChangeDescription(e) {
+    this.setState({
+      description: e.target.value
+    })
+  }
+
+  onChangeDuration(e) {
+    this.setState({
+      duration: e.target.value
+    })
+  }
+
+  onChangeDate(date) {
+    this.setState({
+      date: date
+    })
+  }
+
+  onSubmit(e) {
+    e.preventDefault();
+
+    const exercise = {
+      username: this.state.username,
+      description: this.state.description,
+      duration: this.state.duration,
+      date: this.state.date
     }
 
-    componentDidMount() {
-        this.setState({
-            users: ['test user'],
-            username: 'test user'
-        })
-    }
+    console.log(exercise);
 
-    onChangeUsername(e) {
-        this.setState({
-            username: e.target.value
-        });
-    }
+    axios.post('http://localhost:5001/exercises/add', exercise)
+      .then(res => console.log(res.data));
 
-     onChangeDescription(e) {
-         this.setState({
-             description: e.target.value
-         });
-     }
+    window.location = '/';
+  }
 
-    onChangeDuration(e) {
-        this.setState({
-            duration: e.target.value
-        });
-    }
-
-    onChangeDate(date) {
-        this.setState({
-            date: date
-        });
-    }
-
-    onSubmit(e) {
-        e.preventDefault();
-
-        const exercise = {
-            username: this.state.username,
-            description: this.state.description,
-            duration: this.state.duration,
-            date: this.state.date
-        }
-
-        console.log(exercise);
-
-        window.location = '/';
-    }
-    
-    render() {
+  render() {
     return (
     <div>
       <h3>Create New Exercise Log</h3>
